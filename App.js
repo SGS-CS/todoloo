@@ -24,6 +24,9 @@ export default function App() {
       setNewTask('');
     }
   }
+  const handleEnter = (e) => {
+    if (e.key === "Enter") addTask();
+  }
 
   return (
     <View style={styles.container}>
@@ -41,6 +44,7 @@ export default function App() {
         placeholder="Enter a new task"
         value={newTask}
         onChangeText={setNewTask}
+        onKeyPress={handleEnter}
       />
       <Button title="Add" onPress={addTask} />
       </View>
