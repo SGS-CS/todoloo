@@ -1,0 +1,12 @@
+delete tasks with fadeout effect
+add new tasks with a uniquely generated ID, rather than incrementing by 1
+make "lists" into a separate function for organisation
+- add an archive list
+- add different tabs/projects for lists
+*put dates and importance at the right of the task
+*add enter key to create tasks for convenience in testing
+make it so when you press enter the textbox is reselected, so you don't click every time
+*button to open the modal DateTimePicker on Android (inline on some iOS versions)
+*since date selector is not working on web, make web version have its own date selector
+make web date selector pop up above button, not beside
+
