@@ -15,7 +15,7 @@ export default function App() {
   const [importance, setImportance] = useState(3);
   const [oldId, saveId] = useState(3);
 
-  const [showPicker, setShowPicker] = useState(false); // NEW: State to control showing/hiding the DateTimePicker
+  const [showDPicker, setShowDPicker] = useState(false); // NEW: State to control showing/hiding the DateTimePicker
 
   const deleteTask = (id) => {//NEW: delete the task with a checkbox
   //IDEA: later add fade out effect
@@ -62,9 +62,11 @@ export default function App() {
         />
         
         {/* NEW: Button to open the modal DateTimePicker on Android (inline on some iOS versions) */}
-        <Button title="Select Date" onPress={() => setShowPicker(!showPicker)} />
-        
-        {showPicker && (
+        {showDPicker ? (
+        <Button title="Date >" onPress={() => setShowDPicker(!showDPicker)} />) 
+        : (<Button title="Date <" onPress={() => setShowDPicker(!showDPicker)} />)
+        }
+        {showDPicker && (
         
         Platform.OS === 'web' ? (
           // NEW: for if on web, different date selection method

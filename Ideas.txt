@@ -4,8 +4,8 @@
 make it so when you press enter the textbox is reselected, so you don't click every time
 *put dates and importance at the right of the task
 option {
-    make web date selector popup above button
-    make web date selector popup beside button (x)
+    make web date selector popup above button (x)
+    make web date selector popup beside button 
     make web date selector popup on top of button (x)
 }
 make "lists" into a separate function for organisation
