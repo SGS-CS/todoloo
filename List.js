@@ -12,7 +12,7 @@ function List(props){
                 data={props.items}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
-                <Task name={item.name} onDelete={props.deleteItem} id={item.id} />
+                <Task name={item.name} onDelete={props.deleteItem} id={item.id} date={item.date} importance={item.importance}/>
                 )}
             />
         </View>
