@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useId } from 'react';
 import { View, Text, StyleSheet, FlatList, Button, TextInput } from 'react-native';
-import Task from './Task';
+
+import List from './List';
 
 export default function App() {
   const [tasks,setTasks] = useState([
@@ -9,6 +10,7 @@ export default function App() {
     {id: 2, name: 'Do Laundry'}, 
     {id: 3, name:'Study React Native'}
     ]);
+
   const [newTask, setNewTask] = useState('');
   const [oldId, saveId] = useState(3);
   
@@ -24,20 +26,18 @@ export default function App() {
       setNewTask('');
     }
   }
+  
   const handleEnter = (e) => {
     if (e.key === "Enter") addTask();
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Task List</Text>
-      <FlatList
-        data={tasks}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <Task name={item.name} onDelete={deleteTask} id={item.id} />
-        )}
-      />
+      <List 
+        header = "Main List" 
+        items = {tasks}
+        deleteItem = {deleteTask}/>
+
       <View style={styles.inputContainer}>
       <TextInput
         style={styles.input}
@@ -58,11 +58,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   inputContainer: {
     flexDirection: 'row',
