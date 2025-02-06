@@ -1,0 +1,6 @@
+the past few days:
+- tested adding new tasks/removing new tasks
+* working
+- tested selecting dates
+* adding new tasks without selecting a new date after the first will crash
+* solved
