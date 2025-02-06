@@ -1,8 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useId } from 'react';
+
+import List from './List';
+
 import { View, Text, StyleSheet, FlatList, Button, TextInput, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Task from './Task';
+
 
 export default function App() {
   const [tasks,setTasks] = useState([
@@ -10,6 +13,7 @@ export default function App() {
     {id: 2, name: 'Do Laundry', date: new Date(), importance: 3}, 
     {id: 3, name:'Study React Native', date: new Date(), importance: 3}
     ]);
+
   const [newTask, setNewTask] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
   const [importance, setImportance] = useState(3);
@@ -35,6 +39,7 @@ export default function App() {
       setNewTask('');
     }
   }
+
   const handleEnter = (e) => {//NEW: added later on for convenience in testing
     if (e.key === "Enter") addTask();//IDEA: make it so when you press enter the textbox is reselected, so you don't click every time
   }
@@ -44,14 +49,12 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Task List</Text>
-      <FlatList
-        data={tasks}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <Task name={item.name} onDelete={deleteTask} id={item.id} date={item.date} importance={item.importance}/>
-        )}
-      />
+
+      <List 
+        header = "Main List" 
+        items = {tasks}
+        deleteItem = {deleteTask}/>
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -104,11 +107,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   inputContainer: {
     flexDirection: 'row',
