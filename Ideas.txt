@@ -3,6 +3,7 @@
 *add enter key to create tasks for convenience in testing
 make it so when you press enter the textbox is reselected, so you don't click every time
 *put dates and importance at the right of the task
+put the tasks in object classes for better connection between lists
 option {
     make web date selector popup above button (x)
     make web date selector popup beside button 
