@@ -13,12 +13,15 @@ function List(props){
     
     return (
         <View style={styles.list}>
-          <CheckBox
-            checked={checked}
-            onPress={toggle}
-            containerStyle={styles.checkbox}
-          />
-          <Text style={styles.header}>{props.header}</Text>
+            <View style={styles.headerRow}>
+          
+                <Text style={styles.header}>{props.header}</Text>
+                <CheckBox
+                    checked={checked}
+                    onPress={toggle}
+                    containerStyle={styles.checkbox}
+                />
+            </View>
           {!checked && (
             <FlatList
               data={props.items}
@@ -44,6 +47,12 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#fff',
+      },
+      checkbox: {
+        marginRight: 20,
+      },
+      headerRow: {
+        alignItems: 'center',
       },
   });
 

@@ -21,7 +21,7 @@ function Task(props) {
         <Text style={styles.taskText}>{props.name}</Text>
       </View>
       <View style={styles.rightSection}> {/* added later*/}
-        <Text style={styles.date}>{props.date.toString() || 'None'}</Text>
+        <Text style={styles.date}>{props.date || 'None'}</Text>
         <Text style={styles.importance}>{props.importance || '3'}</Text>
       </View>
     </View>
