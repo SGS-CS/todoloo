@@ -1,60 +1,54 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useId } from 'react';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Button, TextInput, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import List from './List';
 
-import { View, Text, StyleSheet, FlatList, Button, TextInput, Platform } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-
-
 export default function App() {
-  const [tasks,setTasks] = useState([
-    {id: 1, name: 'Buy Groceries', date: new Date(), importance: 3},
-    {id: 2, name: 'Do Laundry', date: new Date(), importance: 3}, 
-    {id: 3, name:'Study React Native', date: new Date(), importance: 3}
-    ]);
+  const [tasks, setTasks] = useState([
+    { id: 1, name: 'Buy Groceries', date: new Date(), importance: 3 },
+    { id: 2, name: 'Do Laundry', date: new Date(), importance: 3 },
+    { id: 3, name: 'Study React Native', date: new Date(), importance: 3 },
+  ]);
 
   const [newTask, setNewTask] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
   const [importance, setImportance] = useState(3);
   const [oldId, saveId] = useState(3);
 
-  const [showDPicker, setShowDPicker] = useState(false); // NEW: State to control showing/hiding the DateTimePicker
+  const [showDPicker, setShowDPicker] = useState(false);
 
-  const deleteTask = (id) => {//NEW: delete the task with a checkbox
-  //IDEA: later add fade out effect
+  const deleteTask = (id) => {
     setTasks(tasks.filter((task) => task.id !== id));
-  }
+  };
 
-  const handleDateChange = (e) => {//NEW: makes this applicable to anywhere
+  const handleDateChange = (e) => {
     const newDate = new Date(e.target.value);
     setDueDate(newDate);
-  }
+  };
 
-  const addTask = () => {//NEW: add a new task with an id of prevId + 1
-    if (newTask.trim() !== ''){
-      let tempId = oldId + 1; //IDEA: Research "useId" to generate unique ids, hopefully replace this
-      saveId(tempId)
-      setTasks([...tasks,{id: tempId, name: newTask, date: dueDate, importance: importance}]);
+  const addTask = () => {
+    if (newTask.trim() !== '') {
+      let tempId = oldId + 1;
+      saveId(tempId);
+      setTasks([...tasks, { id: tempId, name: newTask, date: dueDate, importance }]);
       setNewTask('');
     }
-  }
+  };
 
-  const handleEnter = (e) => {//NEW: added later on for convenience in testing
-    if (e.key === "Enter") addTask();//IDEA: make it so when you press enter the textbox is reselected, so you don't click every time
-  }
-  
-  //IDEA: make "Lists" into a separate function
-  //IDEA: add an archive list
+  const handleEnter = (e) => {
+    if (e.key === 'Enter') addTask();
+  };
 
   return (
     <View style={styles.container}>
+      {/* 1) This section flexes to fill the screen, showing the list */}
+      <View style={styles.listSection}>
+        <List header="Main List" items={tasks} deleteItem={deleteTask} />
+      </View>
 
-      <List 
-        header = "Main List" 
-        items = {tasks}
-        deleteItem = {deleteTask}/>
-
+      {/* 2) This section stays at the bottom */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -63,40 +57,32 @@ export default function App() {
           onChangeText={setNewTask}
           onKeyPress={handleEnter}
         />
-        
-        {/* NEW: Button to open the modal DateTimePicker on Android (inline on some iOS versions) */}
+
         {showDPicker ? (
-        <Button title="Date >" onPress={() => setShowDPicker(!showDPicker)} />) 
-        : (<Button title="Date <" onPress={() => setShowDPicker(!showDPicker)} />)
-        }
-        {showDPicker && (
-        
-        Platform.OS === 'web' ? (
-          // NEW: for if on web, different date selection method
-          // IDEA: change this later to make the date selector pop up above the select date option rather than beside
-          <input 
-            type="date"
-            onChange={handleDateChange}
-          />
+          <Button title="Date >" onPress={() => setShowDPicker(!showDPicker)} />
         ) : (
-          /* NEW: Conditionally render DateTimePicker based on showPicker */
-          <DateTimePicker
-            value={dueDate}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={(event, selectedDate) => {
-              if (selectedDate) {
-                setDueDate(selectedDate);
-              }
-            }}
-          />
-        )
-      )
-        }
-      
+          <Button title="Date <" onPress={() => setShowDPicker(!showDPicker)} />
+        )}
+
+        {showDPicker &&
+          (Platform.OS === 'web' ? (
+            <input type="date" onChange={handleDateChange} />
+          ) : (
+            <DateTimePicker
+              value={dueDate}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={(event, selectedDate) => {
+                if (selectedDate) {
+                  setDueDate(selectedDate);
+                }
+              }}
+            />
+          ))}
 
         <Button title="Add" onPress={addTask} />
       </View>
+
       <StatusBar style="auto" />
     </View>
   );
@@ -104,14 +90,21 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    // Take up the full screen
     flex: 1,
-    padding: 20,
     backgroundColor: '#fff',
+    paddingHorizontal: 20,
+  },
+  listSection: {
+    // This grows to fill all remaining vertical space, pushing input to bottom
+    flex: 1,
+    marginTop: 20,
   },
   inputContainer: {
+    // Placed at the bottom (after the list section)
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 20, // Or adjust as desired
   },
   input: {
     flex: 1,
