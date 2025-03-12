@@ -11,17 +11,29 @@ export default function App() {
     { id: 2, name: 'Do Laundry', date: new Date(), importance: 3 },
     { id: 3, name: 'Study React Native', date: new Date(), importance: 3 },
   ]);
+  const [archiveTasks, setArchiveTasks] = useState([
+    { id: 4, name: 'Old Task', date: new Date(), importance: 3 },
+  ]);
 
   const [newTask, setNewTask] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
-  const [importance, setImportance] = useState(3);
-  const [oldId, saveId] = useState(3);
+  const [importance, setImportance] = useState(5);
+  const [oldId, saveId] = useState(5);
 
   const [showDPicker, setShowDPicker] = useState(false);
 
   const deleteTask = (id) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
+
+  const archiveTask = (id) => {
+    const taskToArchive = tasks.find((t) => t.id === id);
+    if (taskToArchive) {
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      setArchiveTasks((prev) => [...prev, taskToArchive]);
+    }
+  };
+
 
   const handleDateChange = (e) => {
     const newDate = new Date(e.target.value);
@@ -40,15 +52,19 @@ export default function App() {
   const handleEnter = (e) => {
     if (e.key === 'Enter') addTask();
   };
+  const sections = [
+    { title: 'Main List', data: tasks },
+    { title: 'Archive', data: archiveTasks },
+  ];
 
   return (
     <View style={styles.container}>
-      {/* 1) This section flexes to fill the screen, showing the list */}
-      <View style={styles.listSection}>
-        <List header="Main List" items={tasks} deleteItem={deleteTask} />
-      </View>
+      <List 
+        sections={sections}
+        archiveItem={archiveTask} 
+      />
 
-      {/* 2) This section stays at the bottom */}
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}

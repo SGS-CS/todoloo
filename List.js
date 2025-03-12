@@ -7,8 +7,10 @@ function List({ sections, archiveItem }) {
   const renderItem = ({ item }) => (
     <Task
       name={item.name}
+      date={item.date.toString()}
+      importance={item.importance}
       id={item.id}
-      onDelete={archiveItem}
+      onArchive={archiveItem}
       // or onDelete / onArchive, depending on your naming
     />
   );

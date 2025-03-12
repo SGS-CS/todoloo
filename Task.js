@@ -7,7 +7,7 @@ function Task(props) {
 
   const toggle = () => {
     toggleCheck(!checked);
-    props.onDelete(props.id); // Trigger delete when checkbox toggled
+    props.onArchive(props.id); // Trigger delete when checkbox toggled
   };
 
   return (
@@ -22,7 +22,7 @@ function Task(props) {
       </View>
       <View style={styles.rightSection}> {/* added later*/}
         <Text style={styles.date}>{props.date || 'None'}</Text>
-        <Text style={styles.importance}>{props.importance || '3'}</Text>
+        <Text style={styles.importance}>{props.importance || 'None'}</Text>
       </View>
     </View>
   );
