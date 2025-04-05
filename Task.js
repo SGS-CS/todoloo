@@ -4,10 +4,13 @@ import { CheckBox } from 'react-native-elements';
 
 function Task(props) {
   const [checked, toggleCheck] = useState(false);
+  // if (props.tags.includes('archived')) {
+  //   toggleCheck(true);
+  // }
 
   const toggle = () => {
     toggleCheck(!checked);
-    props.onArchive(props.id); // Trigger delete when checkbox toggled
+    props.onArchive(props.id); // Instead of deleting, this adds the "archived" tag
   };
 
   return (
@@ -20,7 +23,7 @@ function Task(props) {
         />
         <Text style={styles.taskText}>{props.name}</Text>
       </View>
-      <View style={styles.rightSection}> {/* added later*/}
+      <View style={styles.rightSection}>
         <Text style={styles.date}>{props.date || 'None'}</Text>
         <Text style={styles.importance}>{props.importance || 'None'}</Text>
       </View>
@@ -32,7 +35,7 @@ const styles = StyleSheet.create({
   taskContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Space between left and right sections
+    justifyContent: 'space-between',
     marginVertical: 8,
     padding: 10,
     backgroundColor: '#f9f9f9',
@@ -47,7 +50,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rightSection: {
-    alignItems: 'flex-end', //moved dates to the end of the task bar
+    alignItems: 'flex-end',
   },
   checkbox: {
     margin: 0,

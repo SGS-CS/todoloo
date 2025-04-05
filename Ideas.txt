@@ -9,11 +9,13 @@ option {
     make web date selector popup beside button 
     make web date selector popup on top of button (x)
 }
-make "lists" into a separate function for organisation
-    add an archive list
+*make "lists" into a separate function for organisation
+    *add an archive list
     add different tabs/projects for lists 
+    switch to tags
 delete tasks with fadeout effect
 option {
     add new tasks with a uniquely generated ID
     add new tasks with an ID incrementing by 1 each time (x)
 }
+store & retrieve data offline

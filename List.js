@@ -7,11 +7,11 @@ function List({ sections, archiveItem }) {
   const renderItem = ({ item }) => (
     <Task
       name={item.name}
-      date={item.date.toString()}
+      date={item.date.toLocaleString()}
       importance={item.importance}
+      tags = {item.tags}
       id={item.id}
       onArchive={archiveItem}
-      // or onDelete / onArchive, depending on your naming
     />
   );
 
@@ -27,7 +27,6 @@ function List({ sections, archiveItem }) {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
-        // optional props
       />
     </View>
   );
@@ -37,7 +36,7 @@ export default List;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Make sure it can scroll
+    flex: 1,
     backgroundColor: '#eee',
     borderRadius: 8,
     padding: 10,
@@ -46,7 +45,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 10,
-    backgroundColor: '#ccc', // optional for visual separation
+    backgroundColor: '#ccc',
     padding: 5,
     borderRadius: 4,
   },
