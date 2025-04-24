@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button,
+  TextInput,
+  Platform,
+  TouchableOpacity,} from 'react-native';
 import { CheckBox } from 'react-native-elements';
+import { StatusBar } from 'expo-status-bar';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
+import TagChip from './Tag';
+import List from './List';
 
 function Task(props) {
   const [checked, toggleCheck] = useState(false);
@@ -11,6 +19,10 @@ function Task(props) {
   const toggle = () => {
     toggleCheck(!checked);
     props.onArchive(props.id); // Instead of deleting, this adds the "archived" tag
+  };
+
+  const removeTag = (index) => {
+    props.onDeleteTag(index);
   };
 
   return (
@@ -26,12 +38,39 @@ function Task(props) {
       <View style={styles.rightSection}>
         <Text style={styles.date}>{props.date || 'None'}</Text>
         <Text style={styles.importance}>{props.importance || 'None'}</Text>
+        {props.tags.map((tag, idx) => (
+  <TagChip
+    key={idx}
+    label={tag}
+    onRemove={() => props.onDeleteTag(idx)}
+  />
+))
+}
+
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 10,
+  },
+  tagChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ddd',
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginRight: 5,
+    marginBottom: 5,
+  },
+  tagText: {
+    marginRight: 5,
+  },
   taskContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -67,6 +106,10 @@ const styles = StyleSheet.create({
   importance: {
     fontSize: 14,
     color: '#333',
+    fontWeight: 'bold',
+  },
+  removeTag: {
+    color: 'red',
     fontWeight: 'bold',
   },
 });

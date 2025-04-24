@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, SectionList } from 'react-native';
 import Task from './Task';
 
-function List({ sections, archiveItem }) {
+function List({ sections, archiveItem, removeTag}) {
   // Render each task item
   const renderItem = ({ item }) => (
     <Task
@@ -12,9 +12,10 @@ function List({ sections, archiveItem }) {
       tags = {item.tags}
       id={item.id}
       onArchive={archiveItem}
+      onDeleteTag={(tagIndex) => removeTag(tag.id, tagIndex)}
     />
   );
-
+  
   // Render each section header
   const renderSectionHeader = ({ section }) => (
     <Text style={styles.sectionHeader}>{section.title}</Text>

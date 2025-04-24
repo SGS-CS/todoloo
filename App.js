@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import TagChip from './TagChip';
 
 import List from './List';
 
@@ -68,8 +69,16 @@ export default function App() {
       setNewTag('');
     }
   };
+  // in App()
+  const removeTagFromTask = (taskId, tagIndex) => {
+    setTasks(tasks.map(task => {
+      if (task.id !== taskId) return task;
+      const newTags = task.tags.filter((_, i) => i !== tagIndex);
+      return { ...task, tags: newTags };
+    }));
+  };
 
-  const removeTag = (index) => {
+  const removeTagtoAdd = (index) => {
     setNewTaskTags(newTaskTags.filter((_, i) => i !== index));
   };
 
@@ -83,7 +92,13 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <List sections={sections} archiveItem={archiveTask} />
+      
+    <List
+      sections={sections}
+      archiveItem={archiveTask}
+      removeTag={(taskId, tagIndex) => removeTagFromTask(taskId, tagIndex)}
+    />
+
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -106,14 +121,14 @@ export default function App() {
         </View>
         {/* Display added tags */}
         <View style={styles.tagsContainer}>
-          {newTaskTags.map((tag, index) => (
-            <View key={index} style={styles.tagChip}>
-              <Text style={styles.tagText}>{tag}</Text>
-              <TouchableOpacity onPress={() => removeTag(index)}>
-                <Text style={styles.removeTag}>X</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+        {newTaskTags.map((tag, idx) => (
+  <TagChip
+    key={idx}
+    label={tag}
+    onRemove={() => removeTagtoAdd(idx)}
+  />
+))}
+
         </View>
 
         {/* Date/Time Picker */}
@@ -211,7 +226,7 @@ const styles = StyleSheet.create({
   tagText: {
     marginRight: 5,
   },
-  removeTag: {
+  removeTagtoAdd: {
     color: 'red',
     fontWeight: 'bold',
   },
