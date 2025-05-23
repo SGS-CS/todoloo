@@ -7,10 +7,10 @@ import { CheckBox } from 'react-native-elements';
 import { StatusBar } from 'expo-status-bar';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
-import TagChip from './Tag';
+import TagChip from './TagChip';
 import List from './List';
 
-function Task(props) {
+function Task(props, {onDeleteTag}) {
   const [checked, toggleCheck] = useState(false);
   // if (props.tags.includes('archived')) {
   //   toggleCheck(true);
@@ -19,10 +19,6 @@ function Task(props) {
   const toggle = () => {
     toggleCheck(!checked);
     props.onArchive(props.id); // Instead of deleting, this adds the "archived" tag
-  };
-
-  const removeTag = (index) => {
-    props.onDeleteTag(index);
   };
 
   return (
@@ -39,13 +35,13 @@ function Task(props) {
         <Text style={styles.date}>{props.date || 'None'}</Text>
         <Text style={styles.importance}>{props.importance || 'None'}</Text>
         {props.tags.map((tag, idx) => (
-  <TagChip
-    key={idx}
-    label={tag}
-    onRemove={() => props.onDeleteTag(idx)}
-  />
-))
-}
+          <TagChip
+            key={idx}
+            label={tag}
+            onRemove={() => props.onDeleteTag(idx)} 
+          />
+        ))}
+
 
       </View>
     </View>

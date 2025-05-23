@@ -12,10 +12,17 @@ option {
 *make "lists" into a separate function for organisation
     *add an archive list
     add different tabs/projects for lists 
-    switch to tags
+    *switch to tags
 delete tasks with fadeout effect
 option {
     add new tasks with a uniquely generated ID
     add new tasks with an ID incrementing by 1 each time (x)
 }
 store & retrieve data offline
+- warning or confirmation when deleting task
+- time range when adding 
+- add (?) buttons [
+    what are tags?
+    what is importance?
+]
+Suggested "start on task time" based off "hours available" or "time to complete"

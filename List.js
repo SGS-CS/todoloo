@@ -12,7 +12,7 @@ function List({ sections, archiveItem, removeTag}) {
       tags = {item.tags}
       id={item.id}
       onArchive={archiveItem}
-      onDeleteTag={(tagIndex) => removeTag(tag.id, tagIndex)}
+      onDeleteTag={(tagIndex) => removeTag(item.id, tagIndex)}
     />
   );
   

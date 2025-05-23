@@ -12,15 +12,25 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import TagChip from './TagChip';
+import { app, db } from './firebase'; // adjust the path if needed
+import { collection, addDoc, getDocs, onSnapshot, Timestamp } from 'firebase/firestore';
 
 import List from './List';
+async function addTaskToFirestore(task) {
+  try {
+    
+    await addDoc(collection(db, "tasks"), {
+      ...task,
+      date: task.date instanceof Date ? task.date : new Date(task.date),
+    });
+  } catch (error) {
+    console.error("Error adding task to Firestore:", error);
+  }
+}
+
 
 export default function App() {
   const [tasks, setTasks] = useState([
-    { id: 1, name: 'Buy Groceries', date: new Date(), importance: 3, tags: ['main'] },
-    { id: 2, name: 'Do Laundry', date: new Date(), importance: 3, tags: ['main'] },
-    { id: 3, name: 'Study React Native', date: new Date(), importance: 3, tags: ['main'] },
-    { id: 4, name: 'Old Task', date: new Date(), importance: 3, tags: ['archived'] },
   ]);
   const [newTask, setNewTask] = useState('');
   const [dueDate, setDueDate] = useState(new Date());
@@ -28,10 +38,27 @@ export default function App() {
   const [lastId, setLastId] = useState(5);
   const [showDPicker, setShowDPicker] = useState(false);
   const [showImportancePicker, setShowImportancePicker] = useState(false);
-
-  // New state for tag input
   const [newTag, setNewTag] = useState('');
   const [newTaskTags, setNewTaskTags] = useState([]);
+
+
+
+React.useEffect(() => {
+  const unsubscribe = onSnapshot(collection(db, "tasks"), (querySnapshot) => {
+    const tasksFromFirestore = [];
+    querySnapshot.forEach((doc) => {
+      tasksFromFirestore.push({
+        ...doc.data(),
+        id: doc.id,
+        date: doc.data().date?.toDate?.() ?? new Date(),
+      });
+    });
+    setTasks(tasksFromFirestore);
+  });
+
+  // Clean up listener on unmount
+  return () => unsubscribe();
+}, []);
 
   const archiveTask = (id) => {
     setTasks(tasks.map(task => {
@@ -47,17 +74,22 @@ export default function App() {
     setDueDate(newDate);
   };
 
-  const addTask = () => {
+  const addTask = async () => {
     if (newTask.trim() !== '') {
       const newId = lastId + 1;
       setLastId(newId);
-      // Ensure the task has the "main" tag by default.
       const finalTags = newTaskTags.includes("main") ? newTaskTags : ["main", ...newTaskTags];
-      setTasks([...tasks, { id: newId, name: newTask, date: dueDate, importance, tags: finalTags }]);
+      const taskToAdd = { id: newId, name: newTask, date: Timestamp.fromDate(dueDate), importance, tags: finalTags };
+      
+      setTasks([...tasks, taskToAdd]);
       setNewTask('');
       setNewTaskTags([]);
+  
+
+      await addTaskToFirestore(taskToAdd);
     }
   };
+  
 
   const handleEnter = (e) => {
     if (e.key === 'Enter') addTask();
@@ -76,6 +108,7 @@ export default function App() {
       const newTags = task.tags.filter((_, i) => i !== tagIndex);
       return { ...task, tags: newTags };
     }));
+    // console.log(taskId + ", " + tagIndex);
   };
 
   const removeTagtoAdd = (index) => {
