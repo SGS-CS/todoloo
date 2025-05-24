@@ -16,17 +16,6 @@ import { app, db } from './firebase'; // adjust the path if needed
 import { collection, addDoc, getDocs, onSnapshot, Timestamp } from 'firebase/firestore';
 
 import List from './List';
-async function addTaskToFirestore(task) {
-  try {
-    
-    await addDoc(collection(db, "tasks"), {
-      ...task,
-      date: task.date instanceof Date ? task.date : new Date(task.date),
-    });
-  } catch (error) {
-    console.error("Error adding task to Firestore:", error);
-  }
-}
 
 
 export default function App() {
@@ -37,7 +26,6 @@ export default function App() {
   const [importance, setImportance] = useState(5);
   const [lastId, setLastId] = useState(5);
   const [showDPicker, setShowDPicker] = useState(false);
-  const [showImportancePicker, setShowImportancePicker] = useState(false);
   const [newTag, setNewTag] = useState('');
   const [newTaskTags, setNewTaskTags] = useState([]);
 
@@ -59,6 +47,21 @@ React.useEffect(() => {
   // Clean up listener on unmount
   return () => unsubscribe();
 }, []);
+  const addTaskToFirestore = async (task) => {
+    try {
+      // Validate the date field
+      const firestoreTask = {
+        ...task,
+        date: task.date instanceof Date && !isNaN(task.date)
+          ? Timestamp.fromDate(task.date)
+          : Timestamp.fromDate(new Date()), // fallback if needed
+      };
+
+      await addDoc(collection(db, "tasks"), firestoreTask);
+    } catch (error) {
+      console.error("Error adding task to Firestore:", error);
+    }
+  };
 
   const archiveTask = (id) => {
     setTasks(tasks.map(task => {
