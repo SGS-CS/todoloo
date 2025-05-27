@@ -13,7 +13,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import TagChip from './TagChip';
 import { app, db } from './firebase'; // adjust the path if needed
-import { collection, addDoc, getDocs, onSnapshot, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, getDocs, updateDoc, onSnapshot, query, where, Timestamp } from 'firebase/firestore';
 
 import List from './List';
 
@@ -55,6 +55,7 @@ React.useEffect(() => {
         date: task.date instanceof Date && !isNaN(task.date)
           ? Timestamp.fromDate(task.date)
           : Timestamp.fromDate(new Date()), // fallback if needed
+        
       };
 
       await addDoc(collection(db, "tasks"), firestoreTask);
@@ -63,13 +64,70 @@ React.useEffect(() => {
     }
   };
 
-  const archiveTask = (id) => {
+  const deleteTaskFromFirestore = async (taskId) => {
+  try {
+    await deleteDoc(doc(db, "tasks", taskId));
+    setTasks(prev => prev.filter(task => task.id !== taskId)); // remove from local state
+  } catch (error) {
+    console.error("Error deleting task:", error);
+  }
+};
+
+const recycleTasks = async () => {
+  try {
+    // Query tasks with the "recycled" tag
+    if (!confirm("Are you sure you want to permanently delete all tasks in the recycling bin?")) return;
+    const q = query(collection(db, "tasks"), where("tags", "array-contains", "recycled"));
+    const querySnapshot = await getDocs(q);
+
+    const deletePromises = [];
+    const recycledIds = [];
+
+    querySnapshot.forEach((docSnap) => {
+      deletePromises.push(deleteDoc(doc(db, "tasks", docSnap.id)));
+      recycledIds.push(docSnap.id);
+    });
+    
+
+    await Promise.all(deletePromises);
+
+    // Remove from local state
+    setTasks(prevTasks => prevTasks.filter(task => !recycledIds.includes(task.id)));
+
+    alert("recycle bin emptied!");
+  } catch (error) {
+    console.error("Error deleting recycled tasks:", error);
+  }
+};
+
+const editTaskInFirestore = async (taskId, updatedFields) => {
+  try {
+    const taskRef = doc(db, "tasks", taskId);
+    await updateDoc(taskRef, updatedFields);
+
+    // Optional: update local state
+    setTasks(prev =>
+      prev.map(task =>
+        task.id === taskId ? { ...task, ...updatedFields } : task
+      )
+    );
+  } catch (error) {
+    console.error("Error updating task:", error);
+  }
+};
+
+  const recycleTask = (id) => {
     setTasks(tasks.map(task => {
       if (task.id === id) {
-        return { ...task, tags: task.tags.includes("archived") ? task.tags : [...task.tags, "archived"] };
+        editTaskInFirestore(task.id, {
+          tags: [...task.tags, "recycled"]
+        });
+        return { ...task, tags: task.tags.includes("recycled") ? task.tags : [...task.tags, "recycled"] };
+        
       }
       return task;
     }));
+
   };
 
   const handleDateChange = (e) => {
@@ -118,12 +176,12 @@ React.useEffect(() => {
     setNewTaskTags(newTaskTags.filter((_, i) => i !== index));
   };
 
-  const mainTasks = tasks.filter(task => task.tags.includes("main") && !task.tags.includes("archived"));
-  const archivedTasks = tasks.filter(task => task.tags.includes("archived"));
+  const mainTasks = tasks.filter(task => task.tags.includes("main") && !task.tags.includes("recycled"));
+  const recycledTasks = tasks.filter(task => task.tags.includes("recycled"));
 
   const sections = [
     { title: 'Main List', data: mainTasks },
-    { title: 'Archive', data: archivedTasks },
+    { title: 'Recycle Bin', data: recycledTasks },
   ];
 
   return (
@@ -131,9 +189,11 @@ React.useEffect(() => {
       
     <List
       sections={sections}
-      archiveItem={archiveTask}
+      recycleItem={recycleTask}
       removeTag={(taskId, tagIndex) => removeTagFromTask(taskId, tagIndex)}
     />
+    <Button title="Recycle Tasks" color="red" onPress={recycleTasks} />
+
 
 
       <View style={styles.inputContainer}>
