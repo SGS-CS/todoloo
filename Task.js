@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Button,
   TextInput,
   Platform,
@@ -10,15 +10,28 @@ import { Picker } from '@react-native-picker/picker';
 import TagChip from './TagChip';
 import List from './List';
 
-function Task(props, {onDeleteTag}) {
+function Task(props) {
   const [checked, toggleCheck] = useState(false);
-  // if (props.tags.includes('archived')) {
-  //   toggleCheck(true);
-  // }
+  const [editing, setEditing] = useState(false);
+  const [editedName, setEditedName] = useState(props.name);
+  const inputRef = useRef(null);
 
   const toggle = () => {
     toggleCheck(!checked);
-    props.onArchive(props.id); // Instead of deleting, this adds the "archived" tag
+    props.onRecycle(props.id); // Instead of deleting, this adds the "recycled" tag
+  };
+
+  const handleBlur = () => {
+    if (editedName.trim() !== '' && editedName !== props.name) {
+      props.onEdit(props.id, { name: editedName });
+    }
+    setEditing(false);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.nativeEvent.key === 'Enter') {
+      inputRef.current.blur(); // trigger blur to save
+    }
   };
 
   return (
@@ -29,7 +42,21 @@ function Task(props, {onDeleteTag}) {
           onPress={toggle}
           containerStyle={styles.checkbox}
         />
-        <Text style={styles.taskText}>{props.name}</Text>
+        <TouchableOpacity onPress={() => setEditing(true)}>
+          {editing ? (
+            <TextInput
+              ref={inputRef}
+              style={[styles.taskText, { borderBottomWidth: 1 }]}
+              value={editedName}
+              onChangeText={setEditedName}
+              onBlur={handleBlur}
+              onKeyPress={handleKeyPress}
+              autoFocus
+            />
+          ) : (
+            <Text style={styles.taskText}>{props.name}</Text>
+          )}
+        </TouchableOpacity>
       </View>
       <View style={styles.rightSection}>
         <Text style={styles.date}>{props.date || 'None'}</Text>

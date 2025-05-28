@@ -164,13 +164,21 @@ const editTaskInFirestore = async (taskId, updatedFields) => {
   };
   // in App()
   const removeTagFromTask = (taskId, tagIndex) => {
-    setTasks(tasks.map(task => {
+  // Update local state first
+  setTasks(prevTasks => {
+    return prevTasks.map(task => {
       if (task.id !== taskId) return task;
+
       const newTags = task.tags.filter((_, i) => i !== tagIndex);
+
+      // Async Firestore update (outside of map)
+      editTaskInFirestore(task.id, { tags: newTags });
+
       return { ...task, tags: newTags };
-    }));
-    // console.log(taskId + ", " + tagIndex);
-  };
+    });
+  });
+};
+
 
   const removeTagtoAdd = (index) => {
     setNewTaskTags(newTaskTags.filter((_, i) => i !== index));
@@ -191,6 +199,7 @@ const editTaskInFirestore = async (taskId, updatedFields) => {
       sections={sections}
       recycleItem={recycleTask}
       removeTag={(taskId, tagIndex) => removeTagFromTask(taskId, tagIndex)}
+      onEditTask={editTaskInFirestore}
     />
     <Button title="Recycle Tasks" color="red" onPress={recycleTasks} />
 
