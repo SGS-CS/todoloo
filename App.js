@@ -191,8 +191,9 @@ const editTaskInFirestore = async (taskId, updatedFields) => {
     { title: 'Main List', data: mainTasks },
     { title: 'Recycle Bin', data: recycledTasks },
   ];
-
+  const allTags = [...new Set(tasks.flatMap(task => task.tags))];
   return (
+    
     <View style={styles.container}>
       
     <List
@@ -200,6 +201,7 @@ const editTaskInFirestore = async (taskId, updatedFields) => {
       recycleItem={recycleTask}
       removeTag={(taskId, tagIndex) => removeTagFromTask(taskId, tagIndex)}
       onEditTask={editTaskInFirestore}
+      allTags = {allTags}
     />
     <Button title="Recycle Tasks" color="red" onPress={recycleTasks} />
 

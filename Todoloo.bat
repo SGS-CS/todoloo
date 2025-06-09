@@ -1,2 +1,3 @@
 npm start
+w
 pause

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, SectionList } from 'react-native';
 import Task from './Task';
 
-function List({ sections, recycleItem, removeTag, onEditTask}) {
+function List({ sections, recycleItem, removeTag, onEditTask, allTags}) {
   // Render each task item
   const renderItem = ({ item }) => (
     <Task
@@ -14,6 +14,7 @@ function List({ sections, recycleItem, removeTag, onEditTask}) {
       onRecycle={recycleItem}
       onDeleteTag={(tagIndex) => removeTag(item.id, tagIndex)}
       onEdit={onEditTask}
+      allTags = {allTags}
     />
   );
   
