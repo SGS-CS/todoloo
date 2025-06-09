@@ -4,12 +4,19 @@ import {
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import TagChip from './TagChip';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Platform } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+
 
 function Task(props) {
   const [checked, toggleCheck] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editedName, setEditedName] = useState(props.name);
   const [showTagEditor, setShowTagEditor] = useState(false);
+  const [editingDate, setEditingDate] = useState(false);
+  const [editingImportance, setEditingImportance] = useState(false);
+
   const [newTag, setNewTag] = useState('');
   const inputRef = useRef(null);
 
@@ -33,19 +40,19 @@ function Task(props) {
   };
 
   const handleTagSubmit = (tag = newTag) => {
-  const trimmed = tag.trim();
-  if (trimmed && !props.tags.includes(trimmed)) {
-    props.onEdit(props.id, { tags: [...props.tags, trimmed] });
-  }
-  setNewTag('');
-  setShowTagEditor(false);
-};
+    const trimmed = tag.trim();
+    if (trimmed && !props.tags.includes(trimmed)) {
+      props.onEdit(props.id, { tags: [...props.tags, trimmed] });
+    }
+    setNewTag('');
+    setShowTagEditor(false);
+  };
 
 
   const handleSelectTag = (tag) => {
-  setNewTag(tag); // optional — still useful for UI
-  handleTagSubmit(tag);
-};
+    setNewTag(tag); // optional — still useful for UI
+    handleTagSubmit(tag);
+  };
 
 
 
@@ -73,8 +80,55 @@ function Task(props) {
 
       {/* Right side: Metadata and tag list */}
       <View style={styles.rightSection}>
-        <Text style={styles.date}>{props.date || 'None'}</Text>
-        <Text style={styles.importance}>{props.importance || 'None'}</Text>
+        <TouchableOpacity onPress={() => setEditingDate(true)}>
+          {editingDate ? (
+            Platform.OS === 'web' ? (
+              <input
+                type="datetime-local"
+                value={new Date(props.date).toISOString().slice(0, 16)} // prefill
+                onChange={(e) => {
+                  setEditingDate(false);
+                  props.onEdit(props.id, { date: new Date(e.target.value) });
+                }}
+              />
+            ) : (
+              <DateTimePicker
+                value={new Date(props.date)}
+                mode="datetime"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setEditingDate(false);
+                  if (selectedDate) {
+                    props.onEdit(props.id, { date: selectedDate });
+                  }
+                }}
+              />
+            )
+          ) : (
+            <TouchableOpacity onPress={() => setEditingDate(true)}>
+              <Text style={styles.date}>{props.date}</Text>
+            </TouchableOpacity>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setEditingImportance(true)}>
+          {editingImportance ? (
+            <Picker
+              selectedValue={props.importance}
+              onValueChange={(val) => {
+                setEditingImportance(false);
+                props.onEdit(props.id, { importance: val });
+              }}
+            >
+              {Array.from({ length: 10 }, (_, i) => i + 1).map(val => (
+                <Picker.Item key={val} label={String(val)} value={val} />
+              ))}
+            </Picker>
+          ) : (
+            <Text style={styles.importance}>{props.importance}</Text>
+          )}
+        </TouchableOpacity>
+
 
         <View style={styles.tagsContainer}>
           {props.tags.map((tag, idx) => (
@@ -86,32 +140,36 @@ function Task(props) {
         </View>
 
         {showTagEditor && (
-          <View style={styles.tagEditor}
-          onBlur={handleTagSubmit}
-          autoFocus
+          <View style={styles.tagEditorWrapper} onBlur={() => handleTagSubmit()} autoFocus
           >
             <TextInput
-              style={styles.tagInput}
-              placeholder="Type or select a tag"
-              value={newTag}
-              onChangeText={setNewTag}
-              onKeyPress={handleKeyPress}
-            />
-            <FlatList
-              data={props.allTags.filter(tag => !props.tags.includes(tag))}
-              keyExtractor={(item, index) => item + index}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-  onPress={() => handleSelectTag(item)}
->
-  <Text style={styles.suggestion}>{item}</Text>
-</TouchableOpacity>
+  style={styles.tagInput}
+  placeholder="Type or select a tag"
+  value={newTag}
+  onChangeText={setNewTag}
+  onKeyPress={handleKeyPress}
+/>
 
 
-              )}
-            />
+            {newTag.trim().length > 0 && (
+              <View style={styles.suggestionOverlay}>
+                <FlatList
+                  data={props.allTags.filter(tag =>
+                    tag.toLowerCase().includes(newTag.toLowerCase()) &&
+                    !props.tags.includes(tag)
+                  )}
+                  keyExtractor={(item, index) => item + index}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => handleSelectTag(item)}>
+                      <Text style={styles.suggestionItem}>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            )}
           </View>
         )}
+
       </View>
     </View>
   );

@@ -327,11 +327,10 @@ export default function App() {
           {newTag.trim().length > 0 && (
             <View style={styles.suggestionOverlay}>
               <FlatList
-                data={allTags
-                  .filter(tag =>
-                    tag.toLowerCase().includes(newTag.toLowerCase()) &&
-                    !newTaskTags.includes(tag)
-                  )}
+                data={allTags.filter(tag =>
+                  tag.toLowerCase().includes(newTag.toLowerCase()) &&
+                  !newTaskTags.includes(tag)
+                )}
                 keyExtractor={(item) => item}
                 renderItem={({ item }) => (
                   <TouchableOpacity
@@ -347,6 +346,7 @@ export default function App() {
             </View>
           )}
         </View>
+
 
         {/* Display added tags */}
         <View style={styles.tagsContainer}>
@@ -370,36 +370,37 @@ export default function App() {
 
 const styles = StyleSheet.create({
   tagInputWrapper: {
-  width: '100%',
-  position: 'relative',
-  zIndex: 1,
-  marginBottom: 10,
-},
+    width: '100%',
+    position: 'relative',
+    zIndex: 1,
+    marginBottom: 10,
+  },
 
-suggestionOverlay: {
-  position: 'absolute',
-  top: 40,
-  width: '100%',
-  backgroundColor: '#fff',
-  borderWidth: 1,
-  borderColor: '#ccc',
-  borderRadius: 6,
-  maxHeight: 100,
-  zIndex: 999,
-  padding: 4,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.1,
-  shadowRadius: 2,
-  elevation: 3,
-},
+  suggestionOverlay: {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    width: 200, // fixed width
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    maxHeight: 120,
+    zIndex: 999,
+    padding: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3
+  },
 
-suggestionItem: {
-  padding: 8,
-  fontSize: 14,
-  borderBottomWidth: 1,
-  borderBottomColor: '#eee',
-},
+  suggestionItem: {
+    padding: 8,
+    fontSize: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
