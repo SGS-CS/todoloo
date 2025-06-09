@@ -28,7 +28,7 @@ function Task(props) {
 
   const handleKeyPress = (e) => {
     if (e.nativeEvent.key === 'Enter') {
-      inputRef.current?.blur();
+      handleTagSubmit(newTag);
     }
   };
 
